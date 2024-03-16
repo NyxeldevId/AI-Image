@@ -32,11 +32,11 @@
     "default_prompt": "",
     "default_prompt_negative": "",
     "default_styles": [
-        "Fooocus V2",
-        "Fooocus Enhance",
-        "Fooocus Sharp"
+        "Image V2",
+        "Image Enhance",
+        "Image Sharp"
     ],
-    "default_aspect_ratio": "1152*896",
+    "default_aspect_ratio": "1080*1080",
     "checkpoint_downloads": {
         "juggernautXL_v8Rundiffusion.safetensors": "https://huggingface.co/lllyasviel/fav_models/resolve/main/fav/juggernautXL_v8Rundiffusion.safetensors"
     },
