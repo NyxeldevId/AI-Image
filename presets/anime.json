@@ -33,10 +33,13 @@
     "default_prompt_negative": "",
     "default_styles": [
         "Image V2",
-        "Image Negative",
-        "Image Masterpiece"
+        "Image Masterpiece",
+        "SAI Anime",
+        "SAI Digital Art",
+        "SAI Enhance",
+        "SAI Fantasy Art"
     ],
-    "default_aspect_ratio": "1080*1080",
+    "default_aspect_ratio": "1152*896",
     "checkpoint_downloads": {
         "animaPencilXL_v100.safetensors": "https://huggingface.co/lllyasviel/fav_models/resolve/main/fav/animaPencilXL_v100.safetensors"
     },
