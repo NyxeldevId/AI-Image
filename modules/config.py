@@ -290,9 +290,9 @@ default_scheduler = get_config_item_or_set_default(
 default_styles = get_config_item_or_set_default(
     key='default_styles',
     default_value=[
-        "Fooocus V2",
-        "Fooocus Enhance",
-        "Fooocus Sharp"
+        "Image V2",
+        "Image Enhance",
+        "Image Sharp"
     ],
     validator=lambda x: isinstance(x, list) and all(y in modules.sdxl_styles.legal_style_names for y in x)
 )
@@ -351,17 +351,14 @@ embeddings_downloads = get_config_item_or_set_default(
 available_aspect_ratios = get_config_item_or_set_default(
     key='available_aspect_ratios',
     default_value=[
-        '704*1408', '704*1344', '768*1344', '768*1280', '832*1216', '832*1152',
-        '896*1152', '896*1088', '960*1088', '960*1024', '1024*1024', '1024*960',
-        '1088*960', '1088*896', '1152*896', '1152*832', '1216*832', '1280*768',
-        '1344*768', '1344*704', '1408*704', '1472*704', '1536*640', '1600*640',
-        '1664*576', '1728*576'
+        '1080*1920', '800*1000', '1080*1080', '2560*2048', '6000*4000', '1024*768',
+        '1920*1080', '3440*1440', '5760*1920'
     ],
     validator=lambda x: isinstance(x, list) and all('*' in v for v in x) and len(x) > 1
 )
 default_aspect_ratio = get_config_item_or_set_default(
     key='default_aspect_ratio',
-    default_value='1152*896' if '1152*896' in available_aspect_ratios else available_aspect_ratios[0],
+    default_value='1080*1080' if '1080*1080' in available_aspect_ratios else available_aspect_ratios[0],
     validator=lambda x: x in available_aspect_ratios
 )
 default_inpaint_engine_version = get_config_item_or_set_default(
