@@ -36,7 +36,7 @@
         "Image Photograph",
         "Image Negative"
     ],
-    "default_aspect_ratio": "1080*1080",
+    "default_aspect_ratio": "896*1152",
     "checkpoint_downloads": {
         "realisticStockPhoto_v20.safetensors": "https://huggingface.co/lllyasviel/fav_models/resolve/main/fav/realisticStockPhoto_v20.safetensors"
     },
