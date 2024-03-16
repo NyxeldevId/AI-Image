@@ -28,7 +28,7 @@ styles = {}
 
 styles_files = get_files_from_folder(styles_path, ['.json'])
 
-for x in ['sdxl_styles_fooocus.json',
+for x in ['sdxl_styles_image.json',
           'sdxl_styles_sai.json',
           'sdxl_styles_mre.json',
           'sdxl_styles_twri.json',
@@ -51,7 +51,7 @@ for styles_file in styles_files:
         print(f'Failed to load style file {styles_file}')
 
 style_keys = list(styles.keys())
-fooocus_expansion = "Fooocus V2"
+fooocus_expansion = "Image V2"
 legal_style_names = [fooocus_expansion] + style_keys
 
 
