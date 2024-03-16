@@ -218,3 +218,27 @@
 #stylePreviewOverlay.lower-half {
     transform: translate(-140px, -140px);
 }
+
+@media (max-width: 512px) {
+  .type_row.svelte-15lo0d8.stretch {
+      display: contents;
+  }
+}
+
+#IoOFixed {
+  display: flex;
+  flex-direction: column;
+}
+
+.wrap.svelte-yigbas canvas {
+  max-width: 100%;
+  object-fit: contain;
+}
+
+#advancedSettingDC {
+  display: contents;
+}
+
+#advancedAdvancedSettings {
+  display: none;
+}
