@@ -112,7 +112,7 @@ with shared.gradio_root:
             with gr.Row(elem_classes='type_row'):
                 with gr.Column(scale=17):
                     prompt = gr.Textbox(show_label=False, placeholder="Type prompt here or paste parameters.", elem_id='positive_prompt',
-                                        container=True, autofocus=True, elem_classes='type_row', lines=1024, show_copy_button=True)
+                                        container=True, autofocus=True, elem_classes='type_row', show_copy_button=True)
 
                     default_prompt = modules.config.default_prompt
                     if isinstance(default_prompt, str) and default_prompt != '':
@@ -254,7 +254,7 @@ with shared.gradio_root:
             ip_tab.select(lambda: 'ip', outputs=current_tab, queue=False, _js=down_js, show_progress=False)
             desc_tab.select(lambda: 'desc', outputs=current_tab, queue=False, _js=down_js, show_progress=False)
 
-        with gr.Row(visible=False) as advanced_column:
+        with gr.Row(visible=False, elem_id="advancedFixed") as advanced_column:
             with gr.Tabs():
                 with gr.TabItem(label='Setting'):
                     performance_selection = gr.Radio(label='Performance',
