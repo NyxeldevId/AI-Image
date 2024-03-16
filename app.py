@@ -57,11 +57,11 @@ def process():
     command = ["python", python_script] + additional_arguments
     
     # Jalankan skrip menggunakan subprocess
-    subprocess.run(PIP)
     print("Installing..")
+    subprocess.run(PIP)
     
-    subprocess.run(command)# Menjalankan file batch
     print("Running..")
+    subprocess.run(command)# Menjalankan file batch
     # subprocess.run([batch_file_path], shell=True)
 
 process()
