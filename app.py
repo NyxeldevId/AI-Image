@@ -50,7 +50,7 @@ def process():
     
     # Argument yang ingin Anda tambahkan
     # additional_arguments = ["--in-browser", "--all-in-fp32", "--directml", "--debug-mode", "--multi-user", "--always-cpu", "--is-windows-embedded-python"]
-    additional_arguments = ["--always-cpu", "--attention-quad", "--disable-in-browser", "--multi-user", "--always-download-new-model"]
+    additional_arguments = ["--always-cpu", "--attention-quad", "--disable-in-browser", "--multi-user", "--always-download-new-model", "--preset", "anime"]
     
     # Gabungkan semua argumen
     PIP = ["pip", "install", "-r", "requirements.txt"]
