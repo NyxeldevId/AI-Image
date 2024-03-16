@@ -73,7 +73,7 @@ def generate_clicked(task):
                     gr.update(visible=True, value=product)
                 finished = True
 
-                # delete Fooocus temp images, only keep gradio temp images
+                # delete Image temp images, only keep gradio temp images
                 if args_manager.args.disable_image_log:
                     for filepath in product:
                         if isinstance(filepath, str) and os.path.exists(filepath):
@@ -142,7 +142,7 @@ with shared.gradio_root:
                     skip_button.click(skip_clicked, inputs=currentTask, outputs=currentTask, queue=False, show_progress=False)
             with gr.Row(elem_classes='advanced_check_row'):
                 input_image_checkbox = gr.Checkbox(label='Input Image', value=True, container=True, elem_classes='min_check')
-                advanced_checkbox = gr.Checkbox(label='Advanced', value=False, container=True, elem_classes=['min_check', 'advancedSettings'])
+                advanced_checkbox = gr.Checkbox(label='Advanced', value=False, container=True, elem_classes='min_check')
             with gr.Row(visible=True) as image_input_panel:
                 with gr.Tabs():
                     with gr.TabItem(label='Upscale or Variation') as uov_tab:
@@ -261,7 +261,7 @@ with shared.gradio_root:
                 aspect_ratios_selection = gr.Radio(label='Aspect Ratios', choices=modules.config.available_aspect_ratios,
                                                    value=modules.config.default_aspect_ratio, info='width × height',
                                                    elem_classes='aspect_ratios')
-                image_number = gr.Slider(label='Image Number', minimum=1, maximum=modules.config.default_max_image_number, step=1, value=modules.config.default_image_number)
+                image_number = gr.Slider(label='Image Number', minimum=1, maximum=modules.config.default_max_image_number, step=1, value=1)
 
                 output_format = gr.Radio(label='Output Format',
                                             choices=modules.flags.output_formats,
@@ -273,7 +273,7 @@ with shared.gradio_root:
                                              value=modules.config.default_prompt_negative,
                                              show_copy_button=True)
                 seed_random = gr.Checkbox(label='Random', value=True)
-                image_seed = gr.Textbox(label='Seed', value=0, max_lines=1, visible=True, show_copy_button=True) # workaround for https://github.com/gradio-app/gradio/issues/5354
+                image_seed = gr.Textbox(label='Seed', value=0, max_lines=1, visible=False, show_copy_button=True) # workaround for https://github.com/gradio-app/gradio/issues/5354
 
                 def random_checked(r):
                     return gr.update(visible=not r)
@@ -370,164 +370,166 @@ with shared.gradio_root:
 
                 with gr.Row():
                     model_refresh = gr.Button(label='Refresh', value='\U0001f504 Refresh All Files', variant='secondary', elem_classes='refresh_button')
-            with gr.Tab(label='Advanced'):
-                guidance_scale = gr.Slider(label='Guidance Scale', minimum=1.0, maximum=30.0, step=0.01,
-                                           value=modules.config.default_cfg_scale,
-                                           info='Higher value means style is cleaner, vivider, and more artistic.')
-                sharpness = gr.Slider(label='Image Sharpness', minimum=0.0, maximum=30.0, step=0.001,
-                                      value=modules.config.default_sample_sharpness,
-                                      info='Higher value means image and texture are sharper.')
-                dev_mode = gr.Checkbox(label='Developer Debug Mode', value=True, container=True)
+            
+            with gr.Column(visible=False):
+                with gr.Tab(label='Advanced', elem_id="advancedAdvancedSettings"):
+                    guidance_scale = gr.Slider(label='Guidance Scale', minimum=1.0, maximum=30.0, step=0.01,
+                                            value=modules.config.default_cfg_scale,
+                                            info='Higher value means style is cleaner, vivider, and more artistic.')
+                    sharpness = gr.Slider(label='Image Sharpness', minimum=0.0, maximum=30.0, step=0.001,
+                                        value=modules.config.default_sample_sharpness,
+                                        info='Higher value means image and texture are sharper.')
+                    dev_mode = gr.Checkbox(label='Developer Debug Mode', value=True, container=True)
 
-                with gr.Column(visible=True) as dev_tools:
-                    with gr.Tab(label='Debug Tools'):
-                        adm_scaler_positive = gr.Slider(label='Positive ADM Guidance Scaler', minimum=0.1, maximum=3.0,
-                                                        step=0.001, value=1.5, info='The scaler multiplied to positive ADM (use 1.0 to disable). ')
-                        adm_scaler_negative = gr.Slider(label='Negative ADM Guidance Scaler', minimum=0.1, maximum=3.0,
-                                                        step=0.001, value=0.8, info='The scaler multiplied to negative ADM (use 1.0 to disable). ')
-                        adm_scaler_end = gr.Slider(label='ADM Guidance End At Step', minimum=0.0, maximum=1.0,
-                                                   step=0.001, value=0.3,
-                                                   info='When to end the guidance from positive/negative ADM. ')
+                    with gr.Column(visible=True) as dev_tools:
+                        with gr.Tab(label='Debug Tools'):
+                            adm_scaler_positive = gr.Slider(label='Positive ADM Guidance Scaler', minimum=0.1, maximum=3.0,
+                                                            step=0.001, value=1.5, info='The scaler multiplied to positive ADM (use 1.0 to disable). ')
+                            adm_scaler_negative = gr.Slider(label='Negative ADM Guidance Scaler', minimum=0.1, maximum=3.0,
+                                                            step=0.001, value=0.8, info='The scaler multiplied to negative ADM (use 1.0 to disable). ')
+                            adm_scaler_end = gr.Slider(label='ADM Guidance End At Step', minimum=0.0, maximum=1.0,
+                                                    step=0.001, value=0.3,
+                                                    info='When to end the guidance from positive/negative ADM. ')
 
-                        refiner_swap_method = gr.Dropdown(label='Refiner swap method', value=flags.refiner_swap_method,
-                                                          choices=['joint', 'separate', 'vae'])
+                            refiner_swap_method = gr.Dropdown(label='Refiner swap method', value=flags.refiner_swap_method,
+                                                            choices=['joint', 'separate', 'vae'])
 
-                        adaptive_cfg = gr.Slider(label='CFG Mimicking from TSNR', minimum=1.0, maximum=30.0, step=0.01,
-                                                 value=modules.config.default_cfg_tsnr,
-                                                 info='Enabling Fooocus\'s implementation of CFG mimicking for TSNR '
-                                                      '(effective when real CFG > mimicked CFG).')
-                        sampler_name = gr.Dropdown(label='Sampler', choices=flags.sampler_list,
-                                                   value=modules.config.default_sampler)
-                        scheduler_name = gr.Dropdown(label='Scheduler', choices=flags.scheduler_list,
-                                                     value=modules.config.default_scheduler)
+                            adaptive_cfg = gr.Slider(label='CFG Mimicking from TSNR', minimum=1.0, maximum=30.0, step=0.01,
+                                                    value=modules.config.default_cfg_tsnr,
+                                                    info='Enabling Image\'s implementation of CFG mimicking for TSNR '
+                                                        '(effective when real CFG > mimicked CFG).')
+                            sampler_name = gr.Dropdown(label='Sampler', choices=flags.sampler_list,
+                                                    value=modules.config.default_sampler)
+                            scheduler_name = gr.Dropdown(label='Scheduler', choices=flags.scheduler_list,
+                                                        value=modules.config.default_scheduler)
 
-                        generate_image_grid = gr.Checkbox(label='Generate Image Grid for Each Batch',
-                                                          info='(Experimental) This may cause performance problems on some computers and certain internet conditions.',
-                                                          value=False)
+                            generate_image_grid = gr.Checkbox(label='Generate Image Grid for Each Batch',
+                                                            info='(Experimental) This may cause performance problems on some computers and certain internet conditions.',
+                                                            value=False)
 
-                        overwrite_step = gr.Slider(label='Forced Overwrite of Sampling Step',
-                                                   minimum=-1, maximum=200, step=1,
-                                                   value=modules.config.default_overwrite_step,
-                                                   info='Set as -1 to disable. For developer debugging.')
-                        overwrite_switch = gr.Slider(label='Forced Overwrite of Refiner Switch Step',
-                                                     minimum=-1, maximum=200, step=1,
-                                                     value=modules.config.default_overwrite_switch,
-                                                     info='Set as -1 to disable. For developer debugging.')
-                        overwrite_width = gr.Slider(label='Forced Overwrite of Generating Width',
-                                                    minimum=-1, maximum=2048, step=1, value=-1,
-                                                    info='Set as -1 to disable. For developer debugging. '
-                                                         'Results will be worse for non-standard numbers that SDXL is not trained on.')
-                        overwrite_height = gr.Slider(label='Forced Overwrite of Generating Height',
-                                                     minimum=-1, maximum=2048, step=1, value=-1,
-                                                     info='Set as -1 to disable. For developer debugging. '
-                                                          'Results will be worse for non-standard numbers that SDXL is not trained on.')
-                        overwrite_vary_strength = gr.Slider(label='Forced Overwrite of Denoising Strength of "Vary"',
-                                                            minimum=-1, maximum=1.0, step=0.001, value=-1,
-                                                            info='Set as negative number to disable. For developer debugging.')
-                        overwrite_upscale_strength = gr.Slider(label='Forced Overwrite of Denoising Strength of "Upscale"',
-                                                               minimum=-1, maximum=1.0, step=0.001, value=-1,
-                                                               info='Set as negative number to disable. For developer debugging.')
-                        disable_preview = gr.Checkbox(label='Disable Preview', value=False,
-                                                      info='Disable preview during generation.')
-                        disable_intermediate_results = gr.Checkbox(label='Disable Intermediate Results', 
-                                                      value=modules.config.default_performance == 'Extreme Speed',
-                                                      interactive=modules.config.default_performance != 'Extreme Speed',
-                                                      info='Disable intermediate results during generation, only show final gallery.')
-                        disable_seed_increment = gr.Checkbox(label='Disable seed increment',
-                                                             info='Disable automatic seed increment when image number is > 1.',
-                                                             value=False)
+                            overwrite_step = gr.Slider(label='Forced Overwrite of Sampling Step',
+                                                    minimum=-1, maximum=200, step=1,
+                                                    value=modules.config.default_overwrite_step,
+                                                    info='Set as -1 to disable. For developer debugging.')
+                            overwrite_switch = gr.Slider(label='Forced Overwrite of Refiner Switch Step',
+                                                        minimum=-1, maximum=200, step=1,
+                                                        value=modules.config.default_overwrite_switch,
+                                                        info='Set as -1 to disable. For developer debugging.')
+                            overwrite_width = gr.Slider(label='Forced Overwrite of Generating Width',
+                                                        minimum=-1, maximum=2048, step=1, value=-1,
+                                                        info='Set as -1 to disable. For developer debugging. '
+                                                            'Results will be worse for non-standard numbers that SDXL is not trained on.')
+                            overwrite_height = gr.Slider(label='Forced Overwrite of Generating Height',
+                                                        minimum=-1, maximum=2048, step=1, value=-1,
+                                                        info='Set as -1 to disable. For developer debugging. '
+                                                            'Results will be worse for non-standard numbers that SDXL is not trained on.')
+                            overwrite_vary_strength = gr.Slider(label='Forced Overwrite of Denoising Strength of "Vary"',
+                                                                minimum=-1, maximum=1.0, step=0.001, value=-1,
+                                                                info='Set as negative number to disable. For developer debugging.')
+                            overwrite_upscale_strength = gr.Slider(label='Forced Overwrite of Denoising Strength of "Upscale"',
+                                                                minimum=-1, maximum=1.0, step=0.001, value=-1,
+                                                                info='Set as negative number to disable. For developer debugging.')
+                            disable_preview = gr.Checkbox(label='Disable Preview', value=False,
+                                                        info='Disable preview during generation.')
+                            disable_intermediate_results = gr.Checkbox(label='Disable Intermediate Results', 
+                                                        value=modules.config.default_performance == 'Extreme Speed',
+                                                        interactive=modules.config.default_performance != 'Extreme Speed',
+                                                        info='Disable intermediate results during generation, only show final gallery.')
+                            disable_seed_increment = gr.Checkbox(label='Disable seed increment',
+                                                                info='Disable automatic seed increment when image number is > 1.',
+                                                                value=False)
 
-                        if not args_manager.args.disable_metadata:
-                            save_metadata_to_images = gr.Checkbox(label='Save Metadata to Images', value=True,
-                                                                  info='Adds parameters to generated images allowing manual regeneration.')
-                            metadata_scheme = gr.Radio(label='Metadata Scheme', choices=flags.metadata_scheme, value=modules.config.default_metadata_scheme,
-                                                       info='Image Prompt parameters are not included. Use png and a1111 for compatibility with Civitai.',
-                                                       visible=True)
+                            if not args_manager.args.disable_metadata:
+                                save_metadata_to_images = gr.Checkbox(label='Save Metadata to Images', value=True,
+                                                                    info='Adds parameters to generated images allowing manual regeneration.')
+                                metadata_scheme = gr.Radio(label='Metadata Scheme', choices=flags.metadata_scheme, value=modules.config.default_metadata_scheme,
+                                                        info='Image Prompt parameters are not included. Use png and a1111 for compatibility with Civitai.',
+                                                        visible=True)
 
-                            save_metadata_to_images.change(lambda x: gr.update(visible=x), inputs=[save_metadata_to_images], outputs=[metadata_scheme], 
-                                                           queue=False, show_progress=False)
+                                save_metadata_to_images.change(lambda x: gr.update(visible=x), inputs=[save_metadata_to_images], outputs=[metadata_scheme], 
+                                                            queue=False, show_progress=False)
 
-                    with gr.Tab(label='Control'):
-                        debugging_cn_preprocessor = gr.Checkbox(label='Debug Preprocessors', value=True,
-                                                                info='See the results from preprocessors.')
-                        skipping_cn_preprocessor = gr.Checkbox(label='Skip Preprocessors', value=True,
-                                                               info='Do not preprocess images. (Inputs are already canny/depth/cropped-face/etc.)')
+                        with gr.Tab(label='Control'):
+                            debugging_cn_preprocessor = gr.Checkbox(label='Debug Preprocessors', value=True,
+                                                                    info='See the results from preprocessors.')
+                            skipping_cn_preprocessor = gr.Checkbox(label='Skip Preprocessors', value=True,
+                                                                info='Do not preprocess images. (Inputs are already canny/depth/cropped-face/etc.)')
 
-                        mixing_image_prompt_and_vary_upscale = gr.Checkbox(label='Mixing Image Prompt and Vary/Upscale',
-                                                                           value=True)
-                        mixing_image_prompt_and_inpaint = gr.Checkbox(label='Mixing Image Prompt and Inpaint',
-                                                                      value=True)
+                            mixing_image_prompt_and_vary_upscale = gr.Checkbox(label='Mixing Image Prompt and Vary/Upscale',
+                                                                            value=True)
+                            mixing_image_prompt_and_inpaint = gr.Checkbox(label='Mixing Image Prompt and Inpaint',
+                                                                        value=True)
 
-                        controlnet_softness = gr.Slider(label='Softness of ControlNet', minimum=0.0, maximum=1.0,
-                                                        step=0.001, value=0.25,
-                                                        info='Similar to the Control Mode in A1111 (use 0.0 to disable). ')
+                            controlnet_softness = gr.Slider(label='Softness of ControlNet', minimum=0.0, maximum=1.0,
+                                                            step=0.001, value=0.25,
+                                                            info='Similar to the Control Mode in A1111 (use 0.0 to disable). ')
 
-                        with gr.Tab(label='Canny'):
-                            canny_low_threshold = gr.Slider(label='Canny Low Threshold', minimum=1, maximum=255,
-                                                            step=1, value=64)
-                            canny_high_threshold = gr.Slider(label='Canny High Threshold', minimum=1, maximum=255,
-                                                             step=1, value=128)
+                            with gr.Tab(label='Canny'):
+                                canny_low_threshold = gr.Slider(label='Canny Low Threshold', minimum=1, maximum=255,
+                                                                step=1, value=64)
+                                canny_high_threshold = gr.Slider(label='Canny High Threshold', minimum=1, maximum=255,
+                                                                step=1, value=128)
 
-                    with gr.Tab(label='Inpaint'):
-                        debugging_inpaint_preprocessor = gr.Checkbox(label='Debug Inpaint Preprocessing', value=True)
-                        inpaint_disable_initial_latent = gr.Checkbox(label='Disable initial latent in inpaint', value=False)
-                        inpaint_engine = gr.Dropdown(label='Inpaint Engine',
-                                                     value=modules.config.default_inpaint_engine_version,
-                                                     choices=flags.inpaint_engine_versions,
-                                                     info='Version of inpaint model')
-                        inpaint_strength = gr.Slider(label='Inpaint Denoising Strength',
-                                                     minimum=0.0, maximum=1.0, step=0.001, value=1.0,
-                                                     info='Same as the denoising strength in A1111 inpaint. '
-                                                          'Only used in inpaint, not used in outpaint. '
-                                                          '(Outpaint always use 1.0)')
-                        inpaint_respective_field = gr.Slider(label='Inpaint Respective Field',
-                                                             minimum=0.0, maximum=1.0, step=0.001, value=0.618,
-                                                             info='The area to inpaint. '
-                                                                  'Value 0 is same as "Only Masked" in A1111. '
-                                                                  'Value 1 is same as "Whole Image" in A1111. '
-                                                                  'Only used in inpaint, not used in outpaint. '
-                                                                  '(Outpaint always use 1.0)')
-                        inpaint_erode_or_dilate = gr.Slider(label='Mask Erode or Dilate',
-                                                            minimum=-64, maximum=64, step=1, value=0,
-                                                            info='Positive value will make white area in the mask larger, '
-                                                                 'negative value will make white area smaller.'
-                                                                 '(default is 0, always process before any mask invert)')
-                        # inpaint_mask_upload_checkbox = gr.Checkbox(label='Enable Mask Upload', value=True)
-                        # invert_mask_checkbox = gr.Checkbox(label='Invert Mask', value=False)
+                        with gr.Tab(label='Inpaint'):
+                            debugging_inpaint_preprocessor = gr.Checkbox(label='Debug Inpaint Preprocessing', value=True)
+                            inpaint_disable_initial_latent = gr.Checkbox(label='Disable initial latent in inpaint', value=False)
+                            inpaint_engine = gr.Dropdown(label='Inpaint Engine',
+                                                        value=modules.config.default_inpaint_engine_version,
+                                                        choices=flags.inpaint_engine_versions,
+                                                        info='Version of inpaint model')
+                            inpaint_strength = gr.Slider(label='Inpaint Denoising Strength',
+                                                        minimum=0.0, maximum=1.0, step=0.001, value=1.0,
+                                                        info='Same as the denoising strength in A1111 inpaint. '
+                                                            'Only used in inpaint, not used in outpaint. '
+                                                            '(Outpaint always use 1.0)')
+                            inpaint_respective_field = gr.Slider(label='Inpaint Respective Field',
+                                                                minimum=0.0, maximum=1.0, step=0.001, value=0.618,
+                                                                info='The area to inpaint. '
+                                                                    'Value 0 is same as "Only Masked" in A1111. '
+                                                                    'Value 1 is same as "Whole Image" in A1111. '
+                                                                    'Only used in inpaint, not used in outpaint. '
+                                                                    '(Outpaint always use 1.0)')
+                            inpaint_erode_or_dilate = gr.Slider(label='Mask Erode or Dilate',
+                                                                minimum=-64, maximum=64, step=1, value=0,
+                                                                info='Positive value will make white area in the mask larger, '
+                                                                    'negative value will make white area smaller.'
+                                                                    '(default is 0, always process before any mask invert)')
+                            # inpaint_mask_upload_checkbox = gr.Checkbox(label='Enable Mask Upload', value=True)
+                            # invert_mask_checkbox = gr.Checkbox(label='Invert Mask', value=False)
 
-                        inpaint_ctrls = [debugging_inpaint_preprocessor, inpaint_disable_initial_latent, inpaint_engine,
-                                         inpaint_strength, inpaint_respective_field,
-                                         inpaint_mask_upload_checkbox, invert_mask_checkbox, inpaint_erode_or_dilate]
+                            inpaint_ctrls = [debugging_inpaint_preprocessor, inpaint_disable_initial_latent, inpaint_engine,
+                                            inpaint_strength, inpaint_respective_field,
+                                            inpaint_mask_upload_checkbox, invert_mask_checkbox, inpaint_erode_or_dilate]
 
-                        inpaint_mask_upload_checkbox.change(lambda x: gr.update(visible=x),
-                                                           inputs=inpaint_mask_upload_checkbox,
-                                                           outputs=inpaint_mask_image, queue=False, show_progress=False)
+                            inpaint_mask_upload_checkbox.change(lambda x: gr.update(visible=x),
+                                                            inputs=inpaint_mask_upload_checkbox,
+                                                            outputs=inpaint_mask_image, queue=False, show_progress=False)
 
-                    with gr.Tab(label='FreeU'):
-                        freeu_enabled = gr.Checkbox(label='Enabled', value=False)
-                        freeu_b1 = gr.Slider(label='B1', minimum=0, maximum=2, step=0.01, value=1.01)
-                        freeu_b2 = gr.Slider(label='B2', minimum=0, maximum=2, step=0.01, value=1.02)
-                        freeu_s1 = gr.Slider(label='S1', minimum=0, maximum=4, step=0.01, value=0.99)
-                        freeu_s2 = gr.Slider(label='S2', minimum=0, maximum=4, step=0.01, value=0.95)
-                        freeu_ctrls = [freeu_enabled, freeu_b1, freeu_b2, freeu_s1, freeu_s2]
+                        with gr.Tab(label='FreeU'):
+                            freeu_enabled = gr.Checkbox(label='Enabled', value=False)
+                            freeu_b1 = gr.Slider(label='B1', minimum=0, maximum=2, step=0.01, value=1.01)
+                            freeu_b2 = gr.Slider(label='B2', minimum=0, maximum=2, step=0.01, value=1.02)
+                            freeu_s1 = gr.Slider(label='S1', minimum=0, maximum=4, step=0.01, value=0.99)
+                            freeu_s2 = gr.Slider(label='S2', minimum=0, maximum=4, step=0.01, value=0.95)
+                            freeu_ctrls = [freeu_enabled, freeu_b1, freeu_b2, freeu_s1, freeu_s2]
 
-                def dev_mode_checked(r):
-                    return gr.update(visible=r)
+                    def dev_mode_checked(r):
+                        return gr.update(visible=r)
 
 
-                dev_mode.change(dev_mode_checked, inputs=[dev_mode], outputs=[dev_tools],
-                                queue=False, show_progress=False)
-
-                def model_refresh_clicked():
-                    modules.config.update_all_model_names()
-                    results = [gr.update(choices=modules.config.model_filenames)]
-                    results += [gr.update(choices=['None'] + modules.config.model_filenames)]
-                    for i in range(modules.config.default_max_lora_number):
-                        results += [gr.update(interactive=True), gr.update(choices=['None'] + modules.config.lora_filenames), gr.update()]
-                    return results
-
-                model_refresh.click(model_refresh_clicked, [], [base_model, refiner_model] + lora_ctrls,
+                    dev_mode.change(dev_mode_checked, inputs=[dev_mode], outputs=[dev_tools],
                                     queue=False, show_progress=False)
+
+                    def model_refresh_clicked():
+                        modules.config.update_all_model_names()
+                        results = [gr.update(choices=modules.config.model_filenames)]
+                        results += [gr.update(choices=['None'] + modules.config.model_filenames)]
+                        for i in range(modules.config.default_max_lora_number):
+                            results += [gr.update(interactive=True), gr.update(choices=['None'] + modules.config.lora_filenames), gr.update()]
+                        return results
+
+                    model_refresh.click(model_refresh_clicked, [], [base_model, refiner_model] + lora_ctrls,
+                                        queue=False, show_progress=False)
 
         performance_selection.change(lambda x: [gr.update(interactive=x != 'Extreme Speed')] * 11 +
                                                [gr.update(visible=x != 'Extreme Speed')] * 1 +
@@ -662,11 +664,11 @@ with shared.gradio_root:
         def trigger_describe(mode, img):
             if mode == flags.desc_type_photo:
                 from extras.interrogate import default_interrogator as default_interrogator_photo
-                return default_interrogator_photo(img), ["Fooocus V2", "Fooocus Enhance", "Fooocus Sharp"]
+                return default_interrogator_photo(img), ["Image V2", "Image Enhance", "Image Sharp"]
             if mode == flags.desc_type_anime:
                 from extras.wd14tagger import default_interrogator as default_interrogator_anime
-                return default_interrogator_anime(img), ["Fooocus V2", "Fooocus Masterpiece"]
-            return mode, ["Fooocus V2"]
+                return default_interrogator_anime(img), ["Image V2", "Image Masterpiece"]
+            return mode, ["Image V2"]
 
         desc_btn.click(trigger_describe, inputs=[desc_method, desc_input_image],
                        outputs=[prompt, style_selections], show_progress=True, queue=False)
