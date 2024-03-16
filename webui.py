@@ -97,7 +97,7 @@ shared.gradio_root = gr.Blocks(
 
 with shared.gradio_root:
     currentTask = gr.State(worker.AsyncTask(args=[]))
-    with gr.Row():
+    with gr.Row(elem_id="dConts"):
         with gr.Column(scale=2):
             with gr.Row():
                 progress_window = grh.Image(label='Preview', show_label=True, visible=False, height=768,
@@ -112,7 +112,7 @@ with shared.gradio_root:
             with gr.Row(elem_classes='type_row'):
                 with gr.Column(scale=17):
                     prompt = gr.Textbox(show_label=False, placeholder="Type prompt here or paste parameters.", elem_id='positive_prompt',
-                                        container=False, autofocus=True, elem_classes='type_row', lines=1024, show_copy_button=True)
+                                        container=True, autofocus=True, elem_classes='type_row', lines=1024, show_copy_button=True)
 
                     default_prompt = modules.config.default_prompt
                     if isinstance(default_prompt, str) and default_prompt != '':
@@ -196,8 +196,9 @@ with shared.gradio_root:
                                            queue=False, show_progress=False)
                     with gr.TabItem(label='Inpaint or Outpaint') as inpaint_tab:
                         with gr.Row(elem_id="IoOFixed"):
-                            inpaint_mask_upload_checkbox = gr.Checkbox(label='Enable Mask Upload', value=False)
-                            invert_mask_checkbox = gr.Checkbox(label='Invert Mask', value=False)
+                            with gr.Row(elem_id="IoOFixed2"):
+                                inpaint_mask_upload_checkbox = gr.Checkbox(label='Enable Mask Upload', value=False)
+                                invert_mask_checkbox = gr.Checkbox(label='Invert Mask', value=False)
                             
                             inpaint_additional_prompt = gr.Textbox(placeholder="Describe what you want to inpaint.", elem_id='inpaint_additional_prompt', label='Inpaint Additional Prompt', visible=False, show_copy_button=True)
                             outpaint_selections = gr.CheckboxGroup(choices=['Left', 'Right', 'Top', 'Bottom'], value=[], label='Outpaint Direction')
@@ -253,9 +254,9 @@ with shared.gradio_root:
             ip_tab.select(lambda: 'ip', outputs=current_tab, queue=False, _js=down_js, show_progress=False)
             desc_tab.select(lambda: 'desc', outputs=current_tab, queue=False, _js=down_js, show_progress=False)
 
-        with gr.Column(scale=1, visible=False) as advanced_column:
-            with gr.Tab(elem_id="advancedSettingDC"):
-                with gr.Tab(label='Setting'):
+        with gr.Row(visible=False) as advanced_column:
+            with gr.Tabs():
+                with gr.TabItem(label='Setting'):
                     performance_selection = gr.Radio(label='Performance',
                                                     choices=modules.flags.performance_selections,
                                                     value=modules.config.default_performance)
@@ -303,7 +304,7 @@ with shared.gradio_root:
                     history_link = gr.HTML()
                     shared.gradio_root.load(update_history_link, outputs=history_link, queue=False, show_progress=False)
 
-                with gr.Tab(label='Style'):
+                with gr.TabItem(label='Style'):
                     style_sorter.try_load_sorted_styles(
                         style_names=legal_style_names,
                         default_selected=modules.config.default_styles)
@@ -337,7 +338,7 @@ with shared.gradio_root:
                                                         show_progress=False).then(
                         lambda: None, _js='()=>{refresh_style_localization();}')
 
-                with gr.Tab(label='Model'):
+                with gr.TabItem(label='Model'):
                     with gr.Group():
                         with gr.Row():
                             base_model = gr.Dropdown(label='Base Model (SDXL only)', choices=modules.config.model_filenames, value=modules.config.default_base_model_name, show_label=True)
