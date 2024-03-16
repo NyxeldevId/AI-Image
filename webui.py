@@ -195,20 +195,20 @@ with shared.gradio_root:
                                            outputs=ip_ad_cols + ip_types + ip_stops + ip_weights,
                                            queue=False, show_progress=False)
                     with gr.TabItem(label='Inpaint or Outpaint') as inpaint_tab:
-                        with gr.Row():
+                        with gr.Row(elem_id="IoOFixed"):
                             inpaint_mask_upload_checkbox = gr.Checkbox(label='Enable Mask Upload', value=False)
                             invert_mask_checkbox = gr.Checkbox(label='Invert Mask', value=False)
                             
-                        with gr.Row():
-                            inpaint_input_image = grh.Image(label='Drag inpaint or outpaint image to here', source='upload', type='numpy', tool='sketch', height=500, brush_color="#FFFFFF", elem_id='inpaint_canvas')
-                            inpaint_mask_image = grh.Image(label='Mask Upload', source='upload', type='numpy', height=500, visible=False)
-
-                        with gr.Row():
                             inpaint_additional_prompt = gr.Textbox(placeholder="Describe what you want to inpaint.", elem_id='inpaint_additional_prompt', label='Inpaint Additional Prompt', visible=False, show_copy_button=True)
                             outpaint_selections = gr.CheckboxGroup(choices=['Left', 'Right', 'Top', 'Bottom'], value=[], label='Outpaint Direction')
                             inpaint_mode = gr.Dropdown(choices=modules.flags.inpaint_options, value=modules.flags.inpaint_option_default, label='Method')
-                        example_inpaint_prompts = gr.Dataset(samples=modules.config.example_inpaint_prompts, label='Additional Prompt Quick List', components=[inpaint_additional_prompt], visible=False)
-                        example_inpaint_prompts.click(lambda x: x[0], inputs=example_inpaint_prompts, outputs=inpaint_additional_prompt, show_progress=False, queue=False)
+                            example_inpaint_prompts = gr.Dataset(samples=modules.config.example_inpaint_prompts, label='Additional Prompt Quick List', components=[inpaint_additional_prompt], visible=False)
+                            example_inpaint_prompts.click(lambda x: x[0], inputs=example_inpaint_prompts, outputs=inpaint_additional_prompt, show_progress=False, queue=False)
+
+                        with gr.Row():
+                            inpaint_input_image = grh.Image(label='Drag inpaint or outpaint image to here', source='upload', type='numpy', tool='sketch', height=500, brush_color="#FFFFFF", elem_id='inpaint_canvas')
+                            inpaint_mask_image = grh.Image(label='Mask Upload', source='upload', type='numpy', height=500, visible=False)
+                            
                     with gr.TabItem(label='Describe') as desc_tab:
                         with gr.Row():
                             with gr.Column():
@@ -253,7 +253,7 @@ with shared.gradio_root:
             ip_tab.select(lambda: 'ip', outputs=current_tab, queue=False, _js=down_js, show_progress=False)
             desc_tab.select(lambda: 'desc', outputs=current_tab, queue=False, _js=down_js, show_progress=False)
 
-        with gr.Column(scale=1, visible=False) as advanced_column:
+        with gr.Column(scale=1, visible=False, elem_id="advancedSettingDC") as advanced_column:
             with gr.Tab(label='Setting'):
                 performance_selection = gr.Radio(label='Performance',
                                                  choices=modules.flags.performance_selections,
@@ -471,7 +471,7 @@ with shared.gradio_root:
                                                                 step=1, value=128)
 
                         with gr.Tab(label='Inpaint'):
-                            debugging_inpaint_preprocessor = gr.Checkbox(label='Debug Inpaint Preprocessing', value=True)
+                            debugging_inpaint_preprocessor = gr.Checkbox(label='Debug Inpaint Preprocessing', value=False)
                             inpaint_disable_initial_latent = gr.Checkbox(label='Disable initial latent in inpaint', value=False)
                             inpaint_engine = gr.Dropdown(label='Inpaint Engine',
                                                         value=modules.config.default_inpaint_engine_version,
@@ -494,7 +494,7 @@ with shared.gradio_root:
                                                                 info='Positive value will make white area in the mask larger, '
                                                                     'negative value will make white area smaller.'
                                                                     '(default is 0, always process before any mask invert)')
-                            # inpaint_mask_upload_checkbox = gr.Checkbox(label='Enable Mask Upload', value=True)
+                            # inpaint_mask_upload_checkbox = gr.Checkbox(label='Enable Mask Upload', value=False)
                             # invert_mask_checkbox = gr.Checkbox(label='Invert Mask', value=False)
 
                             inpaint_ctrls = [debugging_inpaint_preprocessor, inpaint_disable_initial_latent, inpaint_engine,
